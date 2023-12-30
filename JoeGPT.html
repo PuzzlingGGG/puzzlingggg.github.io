@@ -117,6 +117,43 @@
         .settings-popup .toggle {
             margin-right: 10px;
         }
+
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            padding-top: 100px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
   </head>
 <body>
@@ -146,6 +183,23 @@
                 <input type="checkbox" id="superSpeed">
                 Super Speed
             </label>
+    <label>
+        <input type="checkbox" id="ttsEnabled">
+        Text-to-Speech
+    </label>
+        </div>
+    </div>
+
+    <div id="updatesModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeUpdatesModal()">&times;</span>
+            <h2>What's New in v1.1</h2>
+            <ul>
+                <li>Added Text-to-Speech feature for JoeGPT's messages.</li>
+                <li>Implemented a random chance for JoeGPT to say "Manoik".</li>
+                <li>Enhanced chat settings with more customization options.</li>
+                <!-- Add more update items here -->
+            </ul>
         </div>
     </div>
 
@@ -156,6 +210,7 @@ let currentSessionId = Date.now(); // Unique ID for the current session
 const chatSessionsKey = 'chatSessions';
 let maxJoes = 5;
 let superSpeedMode = false;
+let ttsEnabled = false;
 
 // Ensure DOM is loaded before executing
 document.addEventListener('DOMContentLoaded', function() {
@@ -185,6 +240,10 @@ document.addEventListener('DOMContentLoaded', function() {
             superSpeedMode = this.checked;
         });
 
+    document.getElementById('ttsEnabled').addEventListener('change', function() {
+        ttsEnabled = this.checked;
+    });
+
 function showMessage(message, sender) {
     let messagesContainer = document.getElementById('messages');
     let messageDiv = document.createElement('div');
@@ -192,37 +251,43 @@ function showMessage(message, sender) {
     messagesContainer.appendChild(messageDiv);
 }
 
-function simulateTyping(text) {
+function simulateTyping() {
     let messagesContainer = document.getElementById('messages');
     let messageDiv = document.createElement('div');
     messageDiv.classList.add('message');
     messagesContainer.appendChild(messageDiv);
 
-    let fullText = 'JoeGPT: '; // Start with the sender's name
+    let fullText = 'JoeGPT: ';
     messageDiv.textContent = fullText;
 
     let timesToType = getRandomInt(1, maxJoes); // Use maxJoes to determine times to type 'Joe'
     let typedTimes = 0;
-    
+    let messageToSpeak = '';
+
     function typeNextCharacter() {
         if (typedTimes < timesToType) {
-            fullText += text;
+            let textToAdd = Math.random() < 0.1 ? 'Manoik' : 'Joe'; // 1 in 10 chance to add 'Manoik' instead of 'Joe'
+            fullText += textToAdd;
             messageDiv.textContent = fullText;
+            messageToSpeak += textToAdd + ' ';
             typedTimes++;
+
             if (typedTimes < timesToType) {
-                fullText += " "; // Add a space between each 'Joe'
+                fullText += " "; // Add a space between each 'Joe' or 'Manoik'
             }
         }
         if (typedTimes < timesToType) {
             setTimeout(typeNextCharacter, getRandomDelay());
         } else {
-            addMessageToSession('JoeGPT', fullText.substring(8)); // Save JoeGPT's message after typing is done
+            addMessageToSession('JoeGPT', messageToSpeak.trim()); // Save JoeGPT's message after typing is done
+            if (ttsEnabled) {
+                speakMessage(messageToSpeak.trim());
+            }
         }
     }
 
     setTimeout(typeNextCharacter, getRandomDelay()); // Start typing
 }
-
 
 function getRandomInt(min, max) {
     min = Math.ceil(min);
@@ -288,6 +353,24 @@ function loadChat(sessionId) {
         });
     }
 }
+
+// Add this function outside of the simulateTyping function
+function speakMessage(message) {
+    let utterance = new SpeechSynthesisUtterance(message);
+    speechSynthesis.speak(utterance);
+}
+
+    function openUpdatesModal() {
+        document.getElementById('updatesModal').style.display = 'block';
+    }
+
+    // Function to close the updates modal
+    function closeUpdatesModal() {
+        document.getElementById('updatesModal').style.display = 'none';
+    }
+
+    // Automatically open the updates modal after the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', openUpdatesModal);
 </script>
 
 </body>
