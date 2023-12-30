@@ -371,6 +371,23 @@ function speakMessage(message) {
 
     // Automatically open the updates modal after the DOM is fully loaded
     document.addEventListener('DOMContentLoaded', openUpdatesModal);
+
+    function simulateUserMessage(message) {
+        addMessageToSession('You', message);
+        showMessage(message, 'You');
+        // You can also call simulateTyping or any other function here if needed
+    }
+
+      function checkStartingParamAndSendMessage() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const startingMessage = urlParams.get('starting'); // Retrieve the 'starting' parameter
+        if (startingMessage) {
+            let decodedMessage = decodeURIComponent(startingMessage);
+            simulateUserMessage(decodedMessage);
+        }
+    }
+
+  document.addEventListener('DOMContentLoaded', checkStartingParamAndSendMessage);
 </script>
 
 </body>
