@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JoeGPT</title>
+    <meta property="og:title" content="JoeGPT">
+    <meta property="og:description" content="JoeGPT is the future in ai, nothing like it has EVER been seen before.">
+    <style>
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #F8F8F8;
+      }
+
+      .sidebar {
+        background-color: #1E1E1E;
+        color: #CCCCCC;
+        width: 240px;
+        height: 100%;
+        position: fixed;
+        padding: 10px;
+        box-sizing: border-box;
+      }
+
+      .content {
+        margin-left: 240px;
+        padding: 60px;
+        box-sizing: border-box;
+        color: #333333;
+      }
+
+      .sidebar h1 {
+        color: #FFFFFF;
+        font-size: 20px;
+        margin-top: 0;
+        padding: 20px 0;
+      }
+
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+  .sidebar li {
+    cursor: pointer;
+    margin: 5px 0;
+    padding: 5px;
+    background: #f0f0f0;
+    list-style-type: none;
+  }
+
+      .content h1 {
+        font-size: 36px;
+        margin: 0;
+        padding: 0;
+        color: #333;
+      }
+
+      .input-box {
+        width: 100%;
+        padding: 15px;
+        margin: 40px 0 20px;
+        border: none;
+        font-size: 18px;
+        box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      #messages {
+        margin-top: 20px;
+      }
+
+      .message {
+        padding: 5px;
+        margin: 5px 0;
+      }
+
+      .typing-indicator {
+        padding: 5px;
+        margin: 5px 0;
+        font-style: italic;
+      }
+      
+  .sidebar li:hover {
+    background: #e0e0e0;
+  }
+        .settings-container {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+        }
+
+        .settings-popup {
+            display: none;
+            position: fixed;
+            bottom: 50px;
+            left: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            padding: 20px;
+            z-index: 10;
+        }
+
+        .settings-popup.open {
+            display: block;
+        }
+
+        .settings-popup label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .settings-popup input,
+        .settings-popup .toggle {
+            margin-right: 10px;
+        }
+    </style>
+  </head>
+<body>
+
+<div class="sidebar">
+  <h1>JoeGPT Chat</h1>
+  <ul id="chatList">
+    <!-- Chat list items will go here -->
+  </ul>
+</div>
+
+<div class="content">
+  <h1>How can I help you today?</h1>
+  <input id="userInput" class="input-box" type="text" placeholder="Message JoeGPT...">
+  <div id="messages"></div>
+  <button id="endChat">End Chat</button>
+</div>
+
+    <div class="settings-container">
+        <button id="settingsButton">Settings</button>
+        <div id="settingsPopup" class="settings-popup">
+            <label>
+                Max Joe's:
+                <input type="number" id="maxJoes" min="1" value="5">
+            </label>
+            <label>
+                <input type="checkbox" id="superSpeed">
+                Super Speed
+            </label>
+        </div>
+    </div>
+
+<script>
+// Variables to keep track of the chat session
+let currentSession = [];
+let currentSessionId = Date.now(); // Unique ID for the current session
+const chatSessionsKey = 'chatSessions';
+let maxJoes = 5;
+let superSpeedMode = false;
+
+// Ensure DOM is loaded before executing
+document.addEventListener('DOMContentLoaded', function() {
+    loadChatSessions();
+    document.getElementById('userInput').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            let inputVal = this.value;
+            this.value = '';
+            addMessageToSession('You', inputVal);
+            showMessage(inputVal, 'You');
+            simulateTyping('Joe ');
+        }
+    });
+    document.getElementById('endChat').addEventListener('click', endCurrentChat);
+});
+
+        document.getElementById('settingsButton').addEventListener('click', function() {
+            document.getElementById('settingsPopup').classList.toggle('open');
+        });
+
+        document.getElementById('maxJoes').addEventListener('change', function() {
+            maxJoes = parseInt(this.value, 10);
+        });
+
+        document.getElementById('superSpeed').addEventListener('change', function() {
+            superSpeedMode = this.checked;
+        });
+
+function showMessage(message, sender) {
+    let messagesContainer = document.getElementById('messages');
+    let messageDiv = document.createElement('div');
+    messageDiv.textContent = sender + ': ' + message;
+    messagesContainer.appendChild(messageDiv);
+}
+
+function simulateTyping(text) {
+    let messagesContainer = document.getElementById('messages');
+    let messageDiv = document.createElement('div');
+    messageDiv.classList.add('message');
+    messagesContainer.appendChild(messageDiv);
+
+    let fullText = 'JoeGPT: '; // Start with the sender's name
+    messageDiv.textContent = fullText;
+
+    let timesToType = getRandomInt(1, maxJoes); // Use maxJoes to determine times to type 'Joe'
+    let typedTimes = 0;
+    
+    function typeNextCharacter() {
+        if (typedTimes < timesToType) {
+            fullText += text;
+            messageDiv.textContent = fullText;
+            typedTimes++;
+            if (typedTimes < timesToType) {
+                fullText += " "; // Add a space between each 'Joe'
+            }
+        }
+        if (typedTimes < timesToType) {
+            setTimeout(typeNextCharacter, getRandomDelay());
+        } else {
+            addMessageToSession('JoeGPT', fullText.substring(8)); // Save JoeGPT's message after typing is done
+        }
+    }
+
+    setTimeout(typeNextCharacter, getRandomDelay()); // Start typing
+}
+
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getRandomDelay() {
+            if (superSpeedMode) {
+                return 15; // Super speed delay
+            }
+    return Math.random() * (40) + 10;
+}
+
+function addMessageToSession(sender, message) {
+    currentSession.push({ sender, message, timestamp: Date.now() });
+    if (sender === 'JoeGPT') {
+        saveCurrentSession();
+    }
+}
+
+function saveCurrentSession() {
+    let chatSessions = JSON.parse(localStorage.getItem(chatSessionsKey)) || [];
+    // Check if there's an ongoing session and update it instead of creating a new one
+    let sessionIndex = chatSessions.findIndex(session => session.id === currentSessionId);
+    if (sessionIndex === -1) {
+        chatSessions.push({ id: currentSessionId, messages: currentSession });
+    } else {
+        chatSessions[sessionIndex].messages = chatSessions[sessionIndex].messages.concat(currentSession);
+    }
+    localStorage.setItem(chatSessionsKey, JSON.stringify(chatSessions));
+    currentSession = []; // Reset current session for new messages
+    loadChatSessions();
+}
+
+// End the chat session manually
+function endCurrentChat() {
+    // Potentially save the last part of the conversation if needed here
+    currentSessionId = Date.now(); // Generate a new session ID for the next chat
+    loadChatSessions();
+}
+
+function loadChatSessions() {
+    let chatList = document.getElementById('chatList');
+    chatList.innerHTML = ''; // Clear current list
+    let chatSessions = JSON.parse(localStorage.getItem(chatSessionsKey)) || [];
+    chatSessions.forEach(function(session) {
+        let li = document.createElement('li');
+        li.textContent = `Chat: ${new Date(session.id).toLocaleString()}`;
+        li.onclick = function() { loadChat(session.id); };
+        chatList.appendChild(li);
+    });
+}
+
+function loadChat(sessionId) {
+    let chatSessions = JSON.parse(localStorage.getItem(chatSessionsKey)) || [];
+    let session = chatSessions.find(session => session.id === sessionId);
+    if (session) {
+        let messagesContainer = document.getElementById('messages');
+        messagesContainer.innerHTML = ''; // Clear current messages
+        session.messages.forEach(chat => {
+            showMessage(chat.message, chat.sender);
+        });
+    }
+}
+</script>
+
+</body>
+</html>
