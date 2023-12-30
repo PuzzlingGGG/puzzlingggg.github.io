@@ -384,6 +384,7 @@ function speakMessage(message) {
         if (startingMessage) {
             let decodedMessage = decodeURIComponent(startingMessage);
             simulateUserMessage(decodedMessage);
+            simulateTyping('Joe ');
         }
     }
 
