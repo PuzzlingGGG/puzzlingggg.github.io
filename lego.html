@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Miles to LEGO 1x1 Converter</title>
+    <script>
+        function convertMilesToLego() {
+            var miles = document.getElementById('miles').value;
+            var millimetersPerMile = 1609344; // 1 mile = 1609344 millimeters
+            var sizeOfLego = 7.9375; // Size of a 1x1 LEGO brick in millimeters
+            var legoBricks = (miles * millimetersPerMile) / sizeOfLego;
+            document.getElementById('result').innerHTML = legoBricks.toFixed(0) + ' LEGO bricks';
+        }
+    </script>
+</head>
+<body>
+    <h1>Miles to LEGO 1x1 Converter</h1>
+    <p>Enter distance in miles:</p>
+    <input type="number" id="miles" step="any">
+    <button onclick="convertMilesToLego()">Convert</button>
+    <p id="result"></p>
+</body>
+</html>
