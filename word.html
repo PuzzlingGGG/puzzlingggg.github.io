@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Word Generator with TTS</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        text-align: center;
+        padding: 50px;
+    }
+    .word-box {
+        font-size: 2em;
+        color: #333;
+        margin-top: 20px;
+        border: 2px solid #333;
+        display: inline-block;
+        padding: 10px;
+        margin-right: 10px;
+    }
+    button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 1em;
+        cursor: pointer;
+    }
+    #wordContainer {
+        margin-top: 20px;
+    }
+</style>
+</head>
+<body>
+<h1>Word Generator with TTS</h1>
+<input type="number" id="numWords" min="1" max="10" value="1">
+<button onclick="generateWords()">Generate Words</button>
+<div id="wordContainer"></div>
+
+<script>
+function generateWord() {
+    const vowels = 'aeiou';
+    const consonants = 'bcdfghjklmnpqrstvwxyz';
+    let word = '';
+    let wordLength = Math.floor(Math.random() * 5) + 3; // Words between 3 and 7 letters
+
+    for (let i = 0; i < wordLength; i++) {
+        if (i % 2 === 0) {
+            word += consonants.charAt(Math.floor(Math.random() * consonants.length));
+        } else {
+            word += vowels.charAt(Math.floor(Math.random() * vowels.length));
+        }
+    }
+
+    return word;
+}
+
+function generateWords() {
+    let numWords = document.getElementById('numWords').value;
+    numWords = Math.min(Math.max(numWords, 1), 10); // Limit number of words between 1 and 10
+    let wordContainer = document.getElementById('wordContainer');
+    wordContainer.innerHTML = '';
+
+    for (let i = 0; i < numWords; i++) {
+        let wordDiv = document.createElement('div');
+        wordDiv.className = 'word-box';
+        let word = generateWord();
+        wordDiv.innerText = word;
+
+        let ttsButton = document.createElement('button');
+        ttsButton.innerText = '🔊';
+        ttsButton.onclick = function() { 
+            let utterance = new SpeechSynthesisUtterance(word);
+            speechSynthesis.speak(utterance); 
+        };
+
+        wordDiv.appendChild(ttsButton);
+        wordContainer.appendChild(wordDiv);
+    }
+}
+</script>
+</body>
+</html>
