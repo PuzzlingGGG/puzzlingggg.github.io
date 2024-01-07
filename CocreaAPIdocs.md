@@ -1,7 +1,15 @@
 # Gandi IDE API Documentation
 
 ## Overview
-Brief description of the Gandi IDE API.
+The Gandi IDE API includes functionalities such as:
+- Access to popular creations and project details.
+- User information retrieval by user ID.
+- Comprehensive search functionality: global, by creation, and by user.
+- Posting to increment view counts of projects.
+- Retrieval of user-specific creation metrics.
+- Access to bulletins with sorting and filtering capabilities.
+
+This documentation was created independently and is not officially affiliated with the Gandi team. The endpoints detailed here were identified using the developer tools network tab and are intended for personal use and understanding of the Gandi IDE platform.
 
 ## `GET /creations/popular`
 This endpoint retrieves the list of popular creations.
