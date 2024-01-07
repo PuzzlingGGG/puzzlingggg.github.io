@@ -55,7 +55,6 @@ function generateWord() {
 
 function generateWords() {
     let numWords = document.getElementById('numWords').value;
-    numWords = Math.min(Math.max(numWords, 1), 10); // Limit number of words between 1 and 10
     let wordContainer = document.getElementById('wordContainer');
     wordContainer.innerHTML = '';
 
