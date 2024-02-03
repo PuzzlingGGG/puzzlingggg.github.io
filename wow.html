@@ -35,7 +35,7 @@ async function generateWords() {
                 let word = foundWords[Math.floor(Math.random() * foundWords.length)];
                 output.innerHTML += word + "<br>";
             } else {
-                output.innerHTML += "No word found for '" + input[i] + "'<br>";
+                output.innerHTML += input[i];
             }
         }
     } catch (error) {
