@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Word Generator</title>
+</head>
+<body>
+
+<input type="text" id="inputText" placeholder="Enter text" />
+<button onclick="generateWords()">Generate</button>
+<div id="output"></div>
+
+<script>
+async function fetchWords() {
+    const response = await fetch('https://raw.githubusercontent.com/dwyl/english-words/master/words.txt');
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const text = await response.text();
+    return text.split('\n');
+}
+
+async function generateWords() {
+    let input = document.getElementById("inputText").value.toUpperCase();
+    let output = document.getElementById("output");
+    output.innerHTML = "Loading...";
+
+    try {
+        const words = await fetchWords();
+        output.innerHTML = "";
+
+        for (let i = 0; i < input.length; i++) {
+            let foundWords = words.filter(word => word.toUpperCase().startsWith(input[i]));
+            if (foundWords.length > 0) {
+                let word = foundWords[Math.floor(Math.random() * foundWords.length)];
+                output.innerHTML += word + "<br>";
+            } else {
+                output.innerHTML += "No word found for '" + input[i] + "'<br>";
+            }
+        }
+    } catch (error) {
+        output.innerHTML = "Failed to fetch words. " + error.message;
+    }
+}
+</script>
+
+</body>
+</html>
