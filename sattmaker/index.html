@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>satt maker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #141414;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    label {
+      font-size: 16px;
+      margin-right: 5px;
+    }
+    input[type="color"] {
+      margin: 5px;
+      border: none;
+      border-radius: 4px;
+      outline: none;
+    }
+    #preview {
+      width: 200px;
+      height: 200px;
+      border: 1px solid #ccc;
+      margin-top: 20px;
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+    #downloadButton, #shareButton {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #downloadButton:hover, #shareButton:hover {
+      background-color: #0056b3;
+    }
+    #shareURL {
+      margin-top: 10px;
+      padding: 5px;
+      width: 100%;
+      border: none;
+      border-radius: 4px;
+      background-color: #262626;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <h1>satt maker</h1>
+  <label for="color1">color 1</label>
+  <input type="color" id="color1" value="#ffffff"><br>
+  <label for="color2">color 2</label>
+  <input type="color" id="color2" value="#38956e"><br>
+  <label for="color3">color 3</label>
+  <input type="color" id="color3" value="#38956e"><br>
+  <div id="preview"></div>
+  <button id="downloadButton">download image</button>
+  <button id="shareButton">share your satt</button>
+  <input type="text" id="shareURL" readonly>
+
+  <script>
+const color1Input = document.getElementById('color1');
+const color2Input = document.getElementById('color2');
+const color3Input = document.getElementById('color3');
+const preview = document.getElementById('preview');
+const downloadButton = document.getElementById('downloadButton');
+const shareButton = document.getElementById('shareButton');
+const shareURLInput = document.getElementById('shareURL');
+
+const svgURL = 'customsatt.svg';
+let svgContent = '';
+
+fetch(svgURL)
+  .then(response => response.text())
+  .then(content => {
+    svgContent = content;
+    updateColors();
+    checkForSharedColors();
+  })
+  .catch(error => console.error('Error fetching SVG:', error));
+
+color1Input.addEventListener('input', updateColors);
+color2Input.addEventListener('input', updateColors);
+color3Input.addEventListener('input', updateColors);
+downloadButton.addEventListener('click', downloadPNG);
+shareButton.addEventListener('click', generateShareURL);
+
+function updateColors() {
+  const color1 = color1Input.value;
+  const color2 = color2Input.value;
+  const color3 = color3Input.value;
+
+  const modifiedSVG = svgContent
+    .replace(/#ff0000/g, color1)
+    .replace(/#0400ff/g, color2)
+    .replace(/#00ff33/g, color3);
+
+  preview.style.backgroundImage = `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(modifiedSVG)}")`;
+}
+
+function downloadPNG() {
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  const image = new Image();
+
+  const color1 = color1Input.value;
+  const color2 = color2Input.value;
+  const color3 = color3Input.value;
+
+  const modifiedSVG = svgContent
+    .replace(/#ff0000/g, color1)
+    .replace(/#0400ff/g, color2)
+    .replace(/#00ff33/g, color3);
+
+  const svgBlob = new Blob([modifiedSVG], { type: 'image/svg+xml' });
+
+  image.src = URL.createObjectURL(svgBlob);
+
+  image.onload = function() {
+    canvas.width = image.width;
+    canvas.height = image.height;
+
+    context.drawImage(image, 0, 0);
+
+    const pngDataURL = canvas.toDataURL('image/png');
+    const downloadLink = document.createElement('a');
+    downloadLink.href = pngDataURL;
+    downloadLink.download = 'modified_satt.png';
+    downloadLink.click();
+
+    generateShareURL();
+  };
+}
+
+function checkForSharedColors() {
+  const urlParams = getURLParams();
+  if (urlParams.satt) {
+    const decodedColors = JSON.parse(atob(urlParams.satt));
+    updateColorInputs(decodedColors);
+    updateColors();
+  }
+}
+
+function updateColorInputs(colors) {
+  color1Input.value = colors.color1 || '#ff0000';
+  color2Input.value = colors.color2 || '#0400ff';
+  color3Input.value = colors.color3 || '#00ff33';
+}
+
+function generateShareURL() {
+  const colors = {
+    color1: color1Input.value,
+    color2: color2Input.value,
+    color3: color3Input.value
+  };
+  const colorsBase64 = btoa(JSON.stringify(colors));
+  const shareURL = `${window.location.origin}${window.location.pathname}?satt=${colorsBase64}`;
+  shareURLInput.value = shareURL;
+}
+
+function getURLParams() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return Object.fromEntries(urlParams.entries());
+}
+  </script>
+</body>
+</html>
