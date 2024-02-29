@@ -29,8 +29,8 @@ button:hover {
 function joeTranslate() {
     let text = document.getElementById("inputText").value;
     let output = text.replace(/\b\w+\b/g, function(match) {
-        if (match.toLowerCase() === "o") {
-            return 'jo';
+        if (!/[aeiou]/i.test(match)) {
+            return match;
         }
         if (match.toLowerCase().includes("mama")) {
             return '>:(';
@@ -42,11 +42,10 @@ function joeTranslate() {
             } else {
                 return 'Joe' + match.slice(firstVowelIndex + 1);
             }
-}
+        }
     });
     document.getElementById("outputText").innerText = output;
 }
-
 function clearText() {
     document.getElementById("inputText").value = '';
     document.getElementById("outputText").innerText = '';
