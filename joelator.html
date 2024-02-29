@@ -29,23 +29,23 @@ button:hover {
 function joeTranslate() {
     let text = document.getElementById("inputText").value;
     let output = text.replace(/\b\w+\b/g, function(match) {
-        if (!/[aeiou]/i.test(match)) {
-            return match;
-        }
         if (match.toLowerCase().includes("mama")) {
             return '>:(';
         }
         let firstVowelIndex = match.search(/[aeiou]/i);
         if (match.length >= 4 && firstVowelIndex !== -1) {
-            if (match[firstVowelIndex].toLowerCase() === "o") {
+            if (match[firstVowelIndex].toLowerCase() === "o" && match.length > 1) {
                 return 'jo' + match.slice(firstVowelIndex + 1);
             } else {
                 return 'Joe' + match.slice(firstVowelIndex + 1);
             }
         }
+
+        return match;
     });
     document.getElementById("outputText").innerText = output;
 }
+
 function clearText() {
     document.getElementById("inputText").value = '';
     document.getElementById("outputText").innerText = '';
