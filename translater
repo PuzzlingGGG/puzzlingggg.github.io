@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joe Translator</title>
+<script>
+function joeTranslate() {
+    let text = document.getElementById("inputText").value;
+    let output = text.replace(/\b\w+\b/g, function(match) {
+        if (match.toLowerCase().includes("mama")) {
+            return '>:(';
+        }
+        if (match.length > 4 && match.includes('e')) {
+            return 'Joe' + match.slice(match.toLowerCase().indexOf('e') + 1);
+        }
+        return match.replace(/^hello$/, "joello").replace(/^world$/, "jorld");
+    });
+    document.getElementById("outputText").innerText = output;
+}
+</script>
+</head>
+<body>
+<h2>Joe Translator</h2>
+<textarea id="inputText" rows="4" cols="50" placeholder="Enter text here..."></textarea><br>
+<button onclick="joeTranslate()">Translate</button>
+<p>Output:</p>
+<p id="outputText"></p>
+</body>
+</html>
