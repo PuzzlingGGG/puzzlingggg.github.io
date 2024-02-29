@@ -4,26 +4,64 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Joe Translator</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+textarea, p {
+    width: 100%;
+    box-sizing: border-box;
+}
+button {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #45a049;
+}
+</style>
 <script>
 function joeTranslate() {
     let text = document.getElementById("inputText").value;
     let output = text.replace(/\b\w+\b/g, function(match) {
+        if (match.toLowerCase() === "o") {
+            return 'jo';
+        }
         if (match.toLowerCase().includes("mama")) {
             return '>:(';
         }
-        if (match.length > 4 && match.includes('e')) {
-            return 'Joe' + match.slice(match.toLowerCase().indexOf('e') + 1);
-        }
-        return match.replace(/^hello$/, "joello").replace(/^world$/, "jorld");
+        let firstVowelIndex = match.search(/[aeiou]/i);
+        if (match.length >= 4 && firstVowelIndex !== -1) {
+            if (match[firstVowelIndex].toLowerCase() === "o") {
+                return 'jo' + match.slice(firstVowelIndex + 1);
+            } else {
+                return 'Joe' + match.slice(firstVowelIndex + 1);
+            }
+}
     });
     document.getElementById("outputText").innerText = output;
 }
+
+function clearText() {
+    document.getElementById("inputText").value = '';
+    document.getElementById("outputText").innerText = '';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById("inputText").addEventListener('input', joeTranslate);
+});
 </script>
 </head>
 <body>
 <h2>Joe Translator</h2>
 <textarea id="inputText" rows="4" cols="50" placeholder="Enter text here..."></textarea><br>
 <button onclick="joeTranslate()">Translate</button>
+<button onclick="clearText()">Clear</button>
 <p>Output:</p>
 <p id="outputText"></p>
 </body>
