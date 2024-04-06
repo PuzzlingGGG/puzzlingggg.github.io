@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>je user # calculator</title>
+</head>
+<body>
+    <input type="number" id="userIdInput" placeholder="enter your je user id">
+    <button onclick="calculateUserNumber()">calculate user number</button>
+    <p id="userNumberOutput"></p>
+    <p id="specialMessageOutput"></p>
+
+    <script>
+        function calculateUserNumber() {
+            const userId = document.getElementById('userIdInput').value;
+            const userNumber = userId - 10000;
+            document.getElementById('userNumberOutput').textContent = `you are the #${userNumber} user!`;
+
+            let specialMessage;
+            if (userNumber < 10000) {
+                specialMessage = "you’re og!";
+            } else if (userNumber < 20000) {
+                specialMessage = "pretty early to the party!";
+            } else if (userNumber < 30000) {
+                specialMessage = "you're in the middle.";
+            } else {
+                specialMessage = "oh... wow...";
+            }
+
+            document.getElementById('specialMessageOutput').textContent = specialMessage;
+        }
+    </script>
+</body>
+</html>
