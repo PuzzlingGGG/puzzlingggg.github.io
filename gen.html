@@ -112,7 +112,7 @@ populateFonts();
 function addText() {
   const textValue = document.getElementById('textValue').value;
   const fontFamily = $('#fontFamily').val();
-  const fontSize = document.getElementById('fontSize').value;
+  const fontSize = document.getElementById('fontSize').value + 'px';
   const fontColor = document.getElementById('fontColor').value;
   const additionalCSS = document.getElementById('additionalCSS').value;
 
@@ -170,7 +170,7 @@ function showEditModal(index) {
 function saveChanges() {
   const text = document.getElementById('modalText').value;
   const font = $('#modalFont').val();
-  const size = document.getElementById('modalSize').value;
+  const size = document.getElementById('modalSize').value + 'px';
   const color = document.getElementById('modalColor').value;
   const css = document.getElementById('modalCSS').value;
 
