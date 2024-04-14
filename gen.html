@@ -98,7 +98,7 @@
   <label for="fontSize">Size:</label>
   <input type="range" id="fontSize" min="10" max="100" value="14" oninput="sizeValue.value = this.value">
   <output id="sizeValue">14</output>
-  Color: <input type="color" id="fontColor">
+  Color: <input type="color" id="fontColor" value="#FFFFFF">
   CSS: <input type="text" id="additionalCSS" placeholder="Additional CSS">
   <button type="button" onclick="addText()">Add Text</button>
 </form>
@@ -117,7 +117,7 @@
       <option>Courier New</option>
     </select>
     Size: <input type="text" id="modalSize" />
-    Color: <input type="text" id="modalColor" value="#FFFFFF" />
+    Color: <input type="text" id="modalColor" />
     CSS: <input type="text" id="modalCSS" />
     <button type="button" onclick="saveChanges()">Save Changes</button>
     <button type="button" onclick="closeModal()">Close</button>
