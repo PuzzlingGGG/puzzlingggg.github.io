@@ -41,8 +41,10 @@
     <option>Times New Roman</option>
     <option>Courier New</option>
   </select>
-  Size: <input type="text" id="fontSize" placeholder="Size (14px)">
-  Color: <input type="text" id="fontColor" placeholder="Color (black)">
+  <label for="fontSize">Size:</label>
+  <input type="range" id="fontSize" min="10" max="100" value="14" oninput="sizeValue.value = this.value">
+  <output id="sizeValue">14</output>
+  Color: <input type="color" id="fontColor">
   CSS: <input type="text" id="additionalCSS" placeholder="Additional CSS">
   <button type="button" onclick="addText()">Add Text</button>
 </form>
