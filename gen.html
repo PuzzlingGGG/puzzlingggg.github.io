@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Interactive JSON Text Styler</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<style>
+  textarea, #output, #jsonOutput { width: 90%; height: 150px; margin: 10px; }
+  #output { padding: 10px; border: 1px solid #ccc; cursor: pointer; }
+  form { margin: 10px; }
+  #modal {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background: white;
+    border: 1px solid #ccc;
+    z-index: 1001;
+  }
+  #overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+  }
+</style>
+</head>
+<body>
+<form id="textForm">
+  Text: <input type="text" id="textValue" placeholder="Enter text">
+  Font: <select id="fontFamily">
+    <option>Arial</option>
+    <option>Verdana</option>
+    <option>Helvetica</option>
+    <option>Times New Roman</option>
+    <option>Courier New</option>
+  </select>
+  Size: <input type="text" id="fontSize" placeholder="Size (14px)">
+  Color: <input type="text" id="fontColor" placeholder="Color (black)">
+  CSS: <input type="text" id="additionalCSS" placeholder="Additional CSS">
+  <button type="button" onclick="addText()">Add Text</button>
+</form>
+<div id="output"></div>
+<textarea id="jsonOutput"></textarea>
+
+<div id="overlay"></div>
+<div id="modal">
+  <form id="editForm">
+    Text: <input type="text" id="modalText" />
+    Font: <select id="modalFont">
+      <option>Arial</option>
+      <option>Verdana</option>
+      <option>Helvetica</option>
+      <option>Times New Roman</option>
+      <option>Courier New</option>
+    </select>
+    Size: <input type="text" id="modalSize" />
+    Color: <input type="text" id="modalColor" />
+    CSS: <input type="text" id="modalCSS" />
+    <button type="button" onclick="saveChanges()">Save Changes</button>
+    <button type="button" onclick="closeModal()">Close</button>
+  </form>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+<script>
+let jsonData = { line: [] };
+let currentEditingIndex = null;
+const fonts = ["Arial", "Verdana", "Helvetica", "Times New Roman", "Courier New", "Comic Sans MS", "Impact", "Georgia", "Palatino Linotype", "Book Antiqua", "Lucida Sans Unicode", "Trebuchet MS", "Tahoma", "Lucida Console", "Garamond", "Calibri", "Cambria", "Consolas", "Franklin Gothic Medium", "Segoe UI"];
+
+populateFonts();
+
+document.addEventListener('DOMContentLoaded', function () {
+  $('#fontFamily, #modalFont').select2();
+});
+
+function detectFont(font) {
+  let canvas = document.createElement("canvas");
+  let context = canvas.getContext("2d");
+  context.font = "72px monospace";
+  let baselineSize = context.measureText("A").width;
+
+  context.font = "72px '" + font + "', monospace";
+  let newSize = context.measureText("A").width;
+
+  return newSize !== baselineSize;
+}
+
+function populateFonts() {
+  let select = document.getElementById('fontFamily');
+  fonts.forEach(font => {
+    if (detectFont(font)) {
+      let option = document.createElement('option');
+      option.textContent = font;
+      option.value = font;
+      select.appendChild(option);
+    }
+  });
+}
+
+populateFonts();
+
+function addText() {
+  const textValue = document.getElementById('textValue').value;
+  const fontFamily = $('#fontFamily').val();
+  const fontSize = document.getElementById('fontSize').value;
+  const fontColor = document.getElementById('fontColor').value;
+  const additionalCSS = document.getElementById('additionalCSS').value;
+
+  const newText = {
+    text: textValue,
+    style: {
+      font: fontFamily,
+      size: fontSize,
+      color: fontColor,
+      css: additionalCSS
+    }
+  };
+
+  jsonData.line.push(newText);
+  updateOutput();
+  updateJSONOutput();
+}
+
+function updateOutput() {
+  const output = document.getElementById('output');
+  output.innerHTML = '';
+  jsonData.line.forEach((item, index) => {
+    const span = document.createElement('span');
+    span.textContent = item.text;
+    span.style.fontFamily = item.style.font;
+    span.style.fontSize = item.style.size;
+    span.style.color = item.style.color;
+    if (item.style.css) {
+      span.style.cssText += item.style.css;
+    }
+    span.addEventListener('contextmenu', function(event) {
+      event.preventDefault();
+      showEditModal(index);
+    });
+    output.appendChild(span);
+  });
+}
+
+function updateJSONOutput() {
+  document.getElementById('jsonOutput').value = JSON.stringify(jsonData, null, 2);
+}
+
+function showEditModal(index) {
+  const item = jsonData.line[index];
+  document.getElementById('modalText').value = item.text;
+  $('#modalFont').val(item.style.font).trigger('change');
+  document.getElementById('modalSize').value = item.style.size;
+  document.getElementById('modalColor').value = item.style.color;
+  document.getElementById('modalCSS').value = item.style.css;
+  currentEditingIndex = index;
+  document.getElementById('modal').style.display = 'block';
+  document.getElementById('overlay').style.display = 'block';
+}
+
+function saveChanges() {
+  const text = document.getElementById('modalText').value;
+  const font = $('#modalFont').val();
+  const size = document.getElementById('modalSize').value;
+  const color = document.getElementById('modalColor').value;
+  const css = document.getElementById('modalCSS').value;
+
+  if (currentEditingIndex !== null) {
+    const item = jsonData.line[currentEditingIndex];
+    item.text = text;
+    item.style.font = font;
+    item.style.size = size;
+    item.style.color = color;
+    item.style.css = css;
+
+    updateOutput();
+    updateJSONOutput();
+    closeModal();
+  }
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
+  document.getElementById('overlay').style.display = 'none';
+}
+
+updateJSONOutput();
+</script>
+</body>
+</html>
