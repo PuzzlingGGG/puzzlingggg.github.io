@@ -156,6 +156,7 @@ function populateFonts() {
       let option = document.createElement('option');
       option.textContent = font;
       option.value = font;
+      option.style.fontFamily = font; // Apply the font directly to the option
       select.appendChild(option);
     }
   });
@@ -205,6 +206,14 @@ function updateOutput() {
   });
 }
 
+function formatFontOption(state) {
+  if (!state.id) {
+    return state.text;
+  }
+  var $state = $('<span style="font-family:' + state.element.value + '">' + state.text + '</span>');
+  return $state;
+}
+
 function updateJSONOutput() {
   document.getElementById('jsonOutput').value = JSON.stringify(jsonData, null, 2);
 }
@@ -246,6 +255,13 @@ function closeModal() {
   document.getElementById('modal').style.display = 'none';
   document.getElementById('overlay').style.display = 'none';
 }
+
+$(document).ready(function() {
+  $('#fontFamily').select2({
+    templateResult: formatFontOption, // Use the format function for dropdown items
+    templateSelection: formatFontOption // Also use it for the selected item display
+  });
+});
 
 updateJSONOutput();
 </script>
