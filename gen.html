@@ -19,6 +19,7 @@
     border: 1px solid #ccc;
     z-index: 1001;
   }
+  #output { background: black }
   #overlay {
     display: none;
     position: fixed;
@@ -63,7 +64,7 @@
       <option>Courier New</option>
     </select>
     Size: <input type="text" id="modalSize" />
-    Color: <input type="text" id="modalColor" />
+    Color: <input type="text" id="modalColor" value="#fff" />
     CSS: <input type="text" id="modalCSS" />
     <button type="button" onclick="saveChanges()">Save Changes</button>
     <button type="button" onclick="closeModal()">Close</button>
