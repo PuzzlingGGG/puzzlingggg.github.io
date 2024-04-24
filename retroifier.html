@@ -25,113 +25,70 @@
     }
     
     function processImage(imageSrc) {
-    var img = new Image();
-    img.onload = function(){
-        var scaleFactor = document.getElementById('resizeSlider').value / 100;
+        var img = new Image();
+        img.onload = function(){
+            var scaleFactor = document.getElementById('resizeSlider').value / 100;
 
-        var newWidth = img.width * scaleFactor;
-        var newHeight = img.height * scaleFactor;
+            var newWidth = img.width * scaleFactor;
+            var newHeight = img.height * scaleFactor;
 
-        canvas.width = newWidth;
-        canvas.height = newHeight;
+            canvas.width = newWidth;
+            canvas.height = newHeight;
 
-        ctx.drawImage(img, 0, 0, newWidth, newHeight);
-        retroify(ctx, newWidth, newHeight);
+            ctx.drawImage(img, 0, 0, newWidth, newHeight);
+            retroify(ctx, newWidth, newHeight);
+        }
+        img.src = imageSrc;
     }
-    img.src = imageSrc;
-}
+
+    function calculateMostFrequentColor(data) {
+        var colorCount = {};
+
+        for (var i = 0; i < data.length; i += 4) {
+            var color = `${data[i]},${data[i+1]},${data[i+2]}`;
+            if (colorCount[color]) {
+                colorCount[color]++;
+            } else {
+                colorCount[color] = 1;
+            }
+        }
+
+        var mostFrequentColor = Object.keys(colorCount).reduce((a, b) => colorCount[a] > colorCount[b] ? a : b);
+        return mostFrequentColor.split(',').map(Number);
+    }
 
     function retroify(ctx, width, height) {
         var imageData = ctx.getImageData(0, 0, width, height);
         var data = imageData.data;
-        var palette = [
-            [0, 0, 0],
-            [245, 245, 245],
-            [235, 10, 10],
-            [10, 235, 10],
-            [10, 10, 235],
-            [235, 235, 10],
-            [10, 235, 235],
-            [235, 10, 235],
-            [128, 128, 128],
-            [5, 5, 30],
-            [250, 250, 240],
-            [240, 250, 250],
-            [250, 240, 250],
-            [200, 200, 210],
-            [210, 200, 200],
-            [200, 210, 200],
-];
 
-        function findClosestPaletteColor(color) {
-            var closest = palette[0];
-            var closestDistance = Infinity;
-            palette.forEach(paletteColor => {
-                var distance = Math.sqrt(
-                    (color[0] - paletteColor[0]) ** 2 +
-                    (color[1] - paletteColor[1]) ** 2 +
-                    (color[2] - paletteColor[2]) ** 2
-                );
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closest = paletteColor;
-                }
-            });
-            return closest;
-        }
+        var mostFrequentColor = calculateMostFrequentColor(data);
 
         for (var i = 0; i < data.length; i += 4) {
-            var originalColor = [data[i], data[i + 1], data[i + 2]];
-            var closestColor = findClosestPaletteColor(originalColor);
-
-            var error = originalColor.map((channel, idx) => channel - closestColor[idx]);
-
-            if (i + 4 < data.length) {
-                data[i + 4] += error[0] * 7 / 16;
-                data[i + 5] += error[1] * 7 / 16;
-                data[i + 6] += error[2] * 7 / 16;
-            }
-            if (i + 4 * width - 4 < data.length) {
-                data[i + 4 * width - 4] += error[0] * 3 / 16;
-                data[i + 4 * width - 3] += error[1] * 3 / 16;
-                data[i + 4 * width - 2] += error[2] * 3 / 16;
-            }
-            if (i + 4 * width < data.length) {
-                data[i + 4 * width] += error[0] * 5 / 16;
-                data[i + 4 * width + 1] += error[1] * 5 / 16;
-                data[i + 4 * width + 2] += error[2] * 5 / 16;
-            }
-            if (i + 4 * width + 4 < data.length) {
-                data[i + 4 * width + 4] += error[0] * 1 / 16;
-                data[i + 4 * width + 5] += error[1] * 1 / 16;
-                data[i + 4 * width + 6] += error[2] * 1 / 16;
-            }
-
-            data[i] = closestColor[0];
-            data[i + 1] = closestColor[1];
-            data[i + 2] = closestColor[2];
+            data[i] = mostFrequentColor[0];
+            data[i+1] = mostFrequentColor[1];
+            data[i+2] = mostFrequentColor[2];
         }
         ctx.putImageData(imageData, 0, 0);
     }
-    
-    document.getElementById('resizeSlider').addEventListener('input', function() {
-    if (window.lastImageSrc) {
-        processImage(window.lastImageSrc);
-    }
-});
 
-document.getElementById('downloadBtn').addEventListener('click', function() {
-    var canvas = document.getElementById('imageCanvas');
-    var dataURL = canvas.toDataURL('image/png');
-    
-    var downloadLink = document.createElement('a');
-    downloadLink.href = dataURL;
-    downloadLink.download = 'image.png';
-    
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-});
+    document.getElementById('resizeSlider').addEventListener('input', function() {
+        if (window.lastImageSrc) {
+            processImage(window.lastImageSrc);
+        }
+    });
+
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+        var canvas = document.getElementById('imageCanvas');
+        var dataURL = canvas.toDataURL('image/png');
+        
+        var downloadLink = document.createElement('a');
+        downloadLink.href = dataURL;
+        downloadLink.download = 'image.png';
+        
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    });
 
 </script>
 </body>
