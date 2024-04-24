@@ -6,7 +6,9 @@
 <body>
     <input type="file" id="imageLoader" name="imageLoader"/>
     <input type="range" id="resizeSlider" min="1" max="100" value="100">
-<label for="resizeSlider">resize</label>
+    <label for="resizeSlider">resize</label>
+    <input type="range" id="colorCountSlider" min="1" max="10" value="5">
+    <label for="colorCountSlider">number of colors</label>
     <canvas id="imageCanvas"></canvas>
     <button id="downloadBtn">download as png</button>
 <script>
@@ -45,7 +47,7 @@
         var colorCount = {};
 
         for (var i = 0; i < data.length; i += 4) {
-            if (data[i+3] === 0) continue;
+            if (data[i+3] === 0) continue; 
             var color = `${data[i]},${data[i+1]},${data[i+2]}`;
             colorCount[color] = (colorCount[color] || 0) + 1;
         }
@@ -76,7 +78,8 @@
     function retroify(ctx, width, height) {
         var imageData = ctx.getImageData(0, 0, width, height);
         var data = imageData.data;
-        var palette = getFrequentColors(data, 5);
+        var colorCount = document.getElementById('colorCountSlider').value;
+        var palette = getFrequentColors(data, colorCount);
 
         for (var i = 0; i < data.length; i += 4) {
             var originalColor = [data[i], data[i+1], data[i+2]];
@@ -89,6 +92,12 @@
     }
 
     document.getElementById('resizeSlider').addEventListener('input', function() {
+        if (window.lastImageSrc) {
+            processImage(window.lastImageSrc);
+        }
+    });
+
+    document.getElementById('colorCountSlider').addEventListener('input', function() {
         if (window.lastImageSrc) {
             processImage(window.lastImageSrc);
         }
