@@ -23,7 +23,7 @@
         }
         reader.readAsDataURL(e.target.files[0]);     
     }
-
+    
     function processImage(imageSrc) {
         var img = new Image();
         img.onload = function(){
@@ -41,30 +41,49 @@
         img.src = imageSrc;
     }
 
-    function calculateMostFrequentColor(data) {
+    function getFrequentColors(data, count) {
         var colorCount = {};
 
         for (var i = 0; i < data.length; i += 4) {
             if (data[i+3] === 0) continue;
-
             var color = `${data[i]},${data[i+1]},${data[i+2]}`;
             colorCount[color] = (colorCount[color] || 0) + 1;
         }
 
-        var mostFrequentColor = Object.keys(colorCount).reduce((a, b) => colorCount[a] > colorCount[b] ? a : b);
-        return mostFrequentColor.split(',').map(Number);
+        return Object.entries(colorCount)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, count)
+            .map(entry => entry[0].split(',').map(Number));
+    }
+
+    function findClosestPaletteColor(color, palette) {
+        var closest = palette[0];
+        var closestDistance = Infinity;
+        palette.forEach(paletteColor => {
+            var distance = Math.sqrt(
+                (color[0] - paletteColor[0]) ** 2 +
+                (color[1] - paletteColor[1]) ** 2 +
+                (color[2] - paletteColor[2]) ** 2
+            );
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closest = paletteColor;
+            }
+        });
+        return closest;
     }
 
     function retroify(ctx, width, height) {
         var imageData = ctx.getImageData(0, 0, width, height);
         var data = imageData.data;
-
-        var mostFrequentColor = calculateMostFrequentColor(data);
+        var palette = getFrequentColors(data, 5);
 
         for (var i = 0; i < data.length; i += 4) {
-            data[i] = mostFrequentColor[0];
-            data[i+1] = mostFrequentColor[1];
-            data[i+2] = mostFrequentColor[2];
+            var originalColor = [data[i], data[i+1], data[i+2]];
+            var closestColor = findClosestPaletteColor(originalColor, palette);
+            data[i] = closestColor[0];
+            data[i+1] = closestColor[1];
+            data[i+2] = closestColor[2];
         }
         ctx.putImageData(imageData, 0, 0);
     }
