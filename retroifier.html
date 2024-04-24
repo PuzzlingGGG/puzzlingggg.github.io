@@ -23,7 +23,7 @@
         }
         reader.readAsDataURL(e.target.files[0]);     
     }
-    
+
     function processImage(imageSrc) {
         var img = new Image();
         img.onload = function(){
@@ -45,12 +45,10 @@
         var colorCount = {};
 
         for (var i = 0; i < data.length; i += 4) {
+            if (data[i+3] === 0) continue;
+
             var color = `${data[i]},${data[i+1]},${data[i+2]}`;
-            if (colorCount[color]) {
-                colorCount[color]++;
-            } else {
-                colorCount[color] = 1;
-            }
+            colorCount[color] = (colorCount[color] || 0) + 1;
         }
 
         var mostFrequentColor = Object.keys(colorCount).reduce((a, b) => colorCount[a] > colorCount[b] ? a : b);
