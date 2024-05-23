@@ -1,1 +1,132 @@
-<-- add stuff -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>do you have money for</title>
+  <style>
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+    .option-buttons {
+      margin-top: 20px;
+    }
+    .option-buttons button {
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="questionnaire"></div>
+
+  <script>
+    const steps = {
+  "steps": [
+    {
+      "id": "1",
+      "display_name": "Do you have money?",
+      "yes": "2",
+      "no": "3"
+    },
+    {
+      "id": "2",
+      "display_name": "BUY",
+      "image": "metalpipe.jpg"
+    },
+    {
+      "id": "3",
+      "display_name": "Not for:",
+      "image": "metalpipe.jpg",
+      "next": "4"
+    },
+    {
+      "id": "4",
+      "display_name": "Do you have a job?",
+      "yes": "5",
+      "no": "7"
+    },
+    {
+      "id": "5",
+      "display_name": "They pay you?",
+      "yes": "2",
+      "no": "6"
+    },
+    {
+      "id": "6",
+      "display_name": "BLASPHEMY"
+    },
+    {
+      "id": "7",
+      "display_name": "Do you have possessions?",
+      "yes": "8",
+      "no": "9"
+    },
+    {
+      "id": "8",
+      "display_name": "Sell them",
+      "next": "2"
+    },
+    {
+      "id": "9",
+      "display_name": "Do you have a soul?",
+      "yes": "10",
+      "no": "11"
+    },
+    {
+      "id": "10",
+      "display_name": "Sell it",
+      "next": "2"
+    },
+    {
+      "id": "11",
+      "display_name": "LIAR"
+    }
+  ]
+};
+
+    function renderStep(stepId) {
+      const step = steps.steps.find(s => s.id === stepId);
+      const container = document.getElementById('questionnaire');
+      container.innerHTML = '';
+
+      const question = document.createElement('div');
+      question.innerHTML = `<p>${step.display_name}</p>`;
+      container.appendChild(question);
+
+      if (step.yes && step.no) {
+        const yesButton = document.createElement('button');
+        yesButton.innerText = 'Yes';
+        yesButton.onclick = () => renderStep(step.yes);
+        container.appendChild(yesButton);
+
+        const noButton = document.createElement('button');
+        noButton.innerText = 'No';
+        noButton.onclick = () => renderStep(step.no);
+        container.appendChild(noButton);
+      } else if (step.options) {
+        step.options.forEach(option => {
+          const optionButton = document.createElement('button');
+          optionButton.innerText = option.label;
+          optionButton.onclick = () => renderStep(option.next);
+          container.appendChild(optionButton);
+        });
+      } else if (step.next) {
+        const nextButton = document.createElement('button');
+        nextButton.innerText = 'Next';
+        nextButton.onclick = () => renderStep(step.next);
+        container.appendChild(nextButton);
+      } else if (step.image) {
+        const img = document.createElement('img');
+        img.src = step.image;
+        container.appendChild(img);
+      }
+    }
+
+    renderStep('1');
+  </script>
+</body>
+</html>
