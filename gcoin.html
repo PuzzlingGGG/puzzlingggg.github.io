@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gcoins to usd Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            max-width: 400px;
+            margin: auto;
+        }
+        .converter {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="converter">
+    <h2>gcoins to usd Converter</h2>
+    
+    <label for="gcoins">enter gcoins:</label>
+    <input type="number" id="gcoins" placeholder="enter gcoins amount">
+    
+    <button onclick="convertToUSD()">convert to usd</button>
+    
+    <div class="result" id="usdResult"></div>
+
+    <hr>
+
+    <label for="usd">enter usd:</label>
+    <input type="number" id="usd" placeholder="enter usd amount">
+    
+    <button onclick="convertToGCoins()">convert to gcoins</button>
+    
+    <div class="result" id="gcoinsResult"></div>
+</div>
+
+<script>
+    function convertToUSD() {
+        const gcoins = document.getElementById('gcoins').value;
+        const usd = gcoins / 50000;
+        document.getElementById('usdResult').textContent = `usd: $${usd.toFixed(2)}`;
+    }
+
+    function convertToGCoins() {
+        const usd = document.getElementById('usd').value;
+        const gcoins = usd * 50000;
+        document.getElementById('gcoinsResult').textContent = `gcoins: ${gcoins.toFixed(0)}`;
+    }
+</script>
+
+</body>
+</html>
