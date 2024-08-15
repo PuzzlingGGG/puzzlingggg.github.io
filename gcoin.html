@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>gcoins to usd Converter</title>
+    <title>gcoins to usd converter</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -38,7 +38,7 @@
             background-color: #0056b3;
         }
         .result {
-            margin-top: 20px;
+            margin-bottom: 20px;
             font-weight: bold;
         }
     </style>
@@ -46,36 +46,42 @@
 <body>
 
 <div class="converter">
-    <h2>gcoins to usd Converter</h2>
+    <h2>gcoins to usd converter</h2>
+
+    <div class="result" id="usdResult"></div>
     
     <label for="gcoins">enter gcoins:</label>
-    <input type="number" id="gcoins" placeholder="enter gcoins amount">
+    <input type="number" id="gcoins" placeholder="enter gcoins">
     
-    <button onclick="convertToUSD()">convert to usd</button>
-    
-    <div class="result" id="usdResult"></div>
+    <button onclick="gcoinsToUsd()">convert to usd</button>
 
     <hr>
 
-    <label for="usd">enter usd:</label>
-    <input type="number" id="usd" placeholder="enter usd amount">
-    
-    <button onclick="convertToGCoins()">convert to gcoins</button>
-    
     <div class="result" id="gcoinsResult"></div>
+
+    <label for="usd">enter usd:</label>
+    <input type="number" id="usd" placeholder="enter usd">
+    
+    <button onclick="usdToGcoins()">convert to gcoins</button>
 </div>
 
 <script>
-    function convertToUSD() {
+    function gcoinsToUsd() {
         const gcoins = document.getElementById('gcoins').value;
         const usd = gcoins / 50000;
-        document.getElementById('usdResult').textContent = `usd: $${usd.toFixed(2)}`;
+        document.getElementById('usdResult').textContent = `usd: $${formatWithCommas(usd.toFixed(2))}`;
     }
 
-    function convertToGCoins() {
+    function usdToGcoins() {
         const usd = document.getElementById('usd').value;
         const gcoins = usd * 50000;
-        document.getElementById('gcoinsResult').textContent = `gcoins: ${gcoins.toFixed(0)}`;
+        document.getElementById('gcoinsResult').textContent = `gcoins: ${formatWithCommas(gcoins.toFixed(0))}`;
+    }
+
+    function formatWithCommas(x) {
+        const parts = x.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return parts.join(".");
     }
 </script>
 
