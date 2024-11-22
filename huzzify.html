@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huzzify</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea, button {
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Huzzify</h1>
+    <textarea id="inputText" rows="6" cols="50" placeholder="Type your huzzy text here..."></textarea>
+    <button id="huzzifyButton">Huzzify</button>
+    <h2>Result:</h2>
+    <p id="outputText"></p>
+
+    <script>
+        function shouldDoThing(chance, options) {
+            return Math.random() * 10 < chance ? options[Math.floor(Math.random() * options.length)] : '';
+        }
+
+        function modify(text) {
+            let huzzText = text.replace(/\b\w+\b/g, function(match) {
+                let firstVowelIndex = match.search(/[aeiou]/i);
+                if (match.length >= 3 && firstVowelIndex !== -1) {
+                    return match.slice(0, firstVowelIndex) + 'uzz';
+                }
+                return match;
+            });
+
+            const randomHuzzPhrases = [
+                "with the huzz",
+                "just the huzz",
+                "for the huzz",
+                "all the huzz",
+                "the huzz and me",
+                "out with the huzz",
+                "hanging with the huzz"
+            ];
+
+            let extraText = shouldDoThing(3, randomHuzzPhrases);
+            if (extraText) {
+                huzzText += ' ' + extraText;
+            }
+
+            return huzzText;
+        }
+
+        document.getElementById('huzzifyButton').addEventListener('click', function() {
+            const inputText = document.getElementById('inputText').value;
+            const output = modify(inputText);
+            document.getElementById('outputText').textContent = output;
+        });
+    </script>
+</body>
+</html>
