@@ -31,7 +31,7 @@
             let huzzText = text.replace(/\b\w+\b/g, function(match) {
                 let firstVowelIndex = match.search(/[aeiou]/i);
                 if (match.length >= 3 && firstVowelIndex !== -1) {
-                    return match.slice(0, firstVowelIndex) + 'uzz';
+                    return match.slice(0, firstVowelIndex + 1) + 'zz';
                 }
                 return match;
             });
